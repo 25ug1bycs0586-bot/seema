@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Analyze resume · ResumeAI{% endblock %}
+{% block content %}
+<div class="page-heading"><span class="eyebrow">RESUME ANALYSIS</span><h1>Let’s look at your experience.</h1><p>We’ll help you see what your resume shows today and where to go next.</p></div>
+<div class="row g-4">
+  <div class="col-lg-8">
+    <form id="analysis-form" class="content-card upload-form" method="post" action="{{ url_for('analyze') }}" enctype="multipart/form-data">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="section-title"><span class="step-number">1</span><div><h2>Add your resume</h2><p>Choose a PDF/DOCX file or paste the text below.</p></div></div>
+      <label class="drop-zone" for="resume_file" data-drop-zone tabindex="0">
+        <input id="resume_file" name="resume_file" type="file" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" class="visually-hidden" data-resume-file>
+        <span class="upload-icon">↑</span><strong data-file-label>Drop your file here or <span>browse files</span></strong>
+        <small>PDF or DOCX · Maximum {{ max_upload_mb }} MB · Files are not stored</small>
+      </label>
+      <div class="text-divider"><span>OR PASTE RESUME TEXT</span></div>
+      <label for="resume_text" class="form-label">Resume text</label>
+      <textarea class="form-control" id="resume_text" name="resume_text" rows="8" maxlength="100000" placeholder="Paste your resume text here. Include education, projects, experience, skills, and certifications that apply."></textarea>
+      <div class="form-text">Use one source: uploaded file or pasted text. Personal contact information is not needed for analysis.</div>
+      <hr class="soft-rule">
+      <div class="section-title"><span class="step-number">2</span><div><h2>Choose a direction <span class="optional-label">Optional</span></h2><p>Personalize your career recommendations and skill comparison.</p></div></div>
+      <div class="row g-3">
+        <div class="col-md-6"><label class="form-label" for="target_role">Target role</label><select class="form-select" id="target_role" name="target_role"><option value="">Recommend based on my resume</option>{% for job in jobs %}<option value="{{ job.title }}">{{ job.title }}</option>{% endfor %}</select></div>
+        <div class="col-md-6"><label class="form-label" for="career_field">Career field</label><select class="form-select" id="career_field" name="career_field"><option value="">Any field</option>{% for value, label in career_fields %}<option value="{{ value }}">{{ label }}</option>{% endfor %}</select></div>
+        <div class="col-12"><label class="form-label" for="job_description">Optional job description</label><textarea class="form-control" id="job_description" name="job_description" rows="4" maxlength="20000" placeholder="Paste a real job description to compare its skills with your resume."></textarea><div class="form-text">Only skills found in this text are compared. No job openings or employer data are generated.</div></div>
+      </div>
+      <div class="submit-row"><button id="analyze-button" class="btn btn-primary btn-lg" type="submit"><span data-button-label>Analyze my resume</span><span class="spinner-border spinner-border-sm ms-2 d-none" data-submit-spinner aria-hidden="true"></span></button><span>Usually takes a few seconds.</span></div>
+    </form>
+  </div>
+  <div class="col-lg-4">
+    <aside class="content-card analysis-aside"><span class="eyebrow">WHAT YOU’LL GET</span><h2>A report built to help, not judge.</h2><ul class="benefit-list"><li><span>✓</span><div><strong>Resume quality guidance</strong><small>Transparent score with category-level feedback.</small></div></li><li><span>✓</span><div><strong>Skills and evidence</strong><small>Mentions are distinguished from nearby project evidence.</small></div></li><li><span>✓</span><div><strong>Career and learning ideas</strong><small>Local role catalogue, skill gaps, and free learning links.</small></div></li></ul><div class="privacy-callout"><strong>Privacy &amp; safety</strong><p>Files are parsed in memory. Report text is saved to your account so you can view and delete your history. This tool does not make hiring decisions.</p></div></aside>
+  </div>
+</div>
+{% endblock %}

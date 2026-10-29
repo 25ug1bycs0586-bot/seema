@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Create account' if mode == 'register' else 'Sign in' }} · ResumeAI{% endblock %}
+{% block content %}
+<div class="auth-wrap">
+  <section class="auth-card">
+    <div class="auth-brand"><span class="brand-icon">R</span></div>
+    <span class="eyebrow">{{ 'GET STARTED' if mode == 'register' else 'WELCOME BACK' }}</span>
+    <h1>{{ 'Create your account' if mode == 'register' else 'Sign in to ResumeAI' }}</h1>
+    <p class="text-secondary">{{ 'Your reports are private and connected to your account.' if mode == 'register' else 'Continue to your private career workspace.' }}</p>
+    <form method="post" novalidate>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      {% if mode == 'register' %}
+      <div class="mb-3"><label class="form-label" for="name">Name</label><input class="form-control" id="name" name="name" maxlength="120" autocomplete="name" required></div>
+      {% endif %}
+      <div class="mb-3"><label class="form-label" for="email">Email address</label><input class="form-control" id="email" name="email" type="email" maxlength="254" autocomplete="email" required></div>
+      <div class="mb-3"><label class="form-label" for="password">Password</label><input class="form-control" id="password" name="password" type="password" minlength="10" maxlength="128" autocomplete="{{ 'new-password' if mode == 'register' else 'current-password' }}" required>
+        {% if mode == 'register' %}<div class="form-text">Use at least 10 characters.</div>{% endif %}
+      </div>
+      {% if mode == 'login' %}<div class="form-check mb-3"><input class="form-check-input" id="remember" name="remember" type="checkbox"><label class="form-check-label" for="remember">Keep me signed in</label></div>{% endif %}
+      <button class="btn btn-primary w-100 btn-lg" type="submit">{{ 'Create account' if mode == 'register' else 'Sign in' }}</button>
+    </form>
+    <p class="auth-switch">{% if mode == 'register' %}Already registered? <a href="{{ url_for('login') }}">Sign in</a>{% else %}New to ResumeAI? <a href="{{ url_for('register') }}">Create an account</a>{% endif %}</p>
+  </section>
+  <div class="auth-aside"><span class="eyebrow">A PRIVATE SPACE TO GROW</span><h2>Understand your experience. Find your next step.</h2><p>Your uploaded resume is processed for analysis only. The original file is not kept.</p><div class="auth-quote">“Good career advice starts with what you’ve actually done.”</div></div>
+</div>
+{% endblock %}

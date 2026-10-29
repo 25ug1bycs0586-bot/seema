@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Analysis report · ResumeAI{% endblock %}
+{% block content %}
+<div class="report-header page-heading d-flex flex-wrap align-items-end justify-content-between gap-3">
+  <div><span class="eyebrow">YOUR ANALYSIS · {{ analysis.created_at.strftime('%b %d, %Y') }}</span><h1>Resume insights</h1><p>For {{ analysis.target_role or 'your next opportunity' }} · <span class="mode-badge">{{ analysis.analyzer_mode }}</span></p></div>
+  <div class="d-flex flex-wrap gap-2"><button class="btn btn-light border" type="button" data-copy-report>Copy report</button><a class="btn btn-outline-primary" href="{{ url_for('download_pdf', analysis_id=analysis.id) }}">↓ Download PDF</a><a class="btn btn-primary" href="{{ url_for('analyze') }}">Analyze another</a></div>
+</div>
+<div class="alert alert-info report-disclaimer">Guidance only: scores are not hiring probabilities, and missing evidence does not mean you lack a skill.</div>
+<div class="row g-3 mb-4">
+  <div class="col-md-6"><section class="score-card"><div class="score-orb"><span>{{ report.quality.score }}</span><small>/ 100</small></div><div><span class="eyebrow">RESUME QUALITY GUIDANCE</span><h2>A useful starting point</h2><p>{{ report.quality.method }}</p></div></section></div>
+  <div class="col-md-6"><section class="score-card job-score-card">{% if report.job_match %}<div class="score-orb secondary"><span>{{ report.job_match.score }}</span><small>%</small></div><div><span class="eyebrow">SKILL COVERAGE</span><h2>Target comparison</h2><p>{{ report.job_match.method }} · {{ report.job_match.covered|length }} of {{ report.job_match.required_count }} required skills detected.</p></div>{% else %}<div class="score-orb neutral"><span>—</span></div><div><span class="eyebrow">TARGET COMPARISON</span><h2>Add a role or job description</h2><p>Analyze again with a target role or job description to see skill coverage.</p></div>{% endif %}</section></div>
+</div>
+<div class="row g-4">
+  <div class="col-lg-8">
+    <section class="content-card mb-4"><div class="card-heading"><div><span class="eyebrow">PROFILE SNAPSHOT</span><h2>Summary</h2></div><button class="btn btn-sm btn-light" type="button" data-copy-summary>Copy summary</button></div><p class="report-summary" data-report-summary>{{ report.summary }}</p><p class="small text-secondary mb-0">Use this as a draft only. Check that every detail accurately reflects your experience.</p></section>
+    <section class="content-card mb-4"><div class="card-heading"><div><span class="eyebrow">SKILLS FOUND IN YOUR TEXT</span><h2>Skills &amp; evidence</h2></div></div>
+      {% if report.skills %}
+      <div class="row g-4"><div class="col-md-5"><div class="chart-wrap"><canvas data-skill-chart data-labels='{{ report.skill_categories.keys()|list|tojson }}' data-values='{{ report.skill_categories.values()|map("length")|list|tojson }}' role="img" aria-label="Chart showing detected skills by category"></canvas></div></div><div class="col-md-7 skill-groups">
+        {% for category, skills in report.skill_categories.items() if skills %}
+        <div class="skill-group"><strong>{{ category }}</strong><div class="d-flex flex-wrap gap-2">{% for skill in report.skills if skill.category == category %}<span class="skill-evidence {{ 'supported' if skill.evidence_level == 'supported' else '' }}" title="{{ skill.evidence }}">{{ skill.name }}<small>{{ 'evidence nearby' if skill.evidence_level == 'supported' else 'mentioned' }}</small></span>{% endfor %}</div></div>
+        {% endfor %}
+      </div></div>
+      {% else %}<p class="text-secondary mb-0">No skills from the local catalogue were detected. Try a text-based resume with a skills section.</p>{% endif %}
+      <p class="small text-secondary mt-3 mb-0">Keyword detection cannot verify proficiency. Skills not found here may still be skills you have.</p>
+    </section>
+    <section class="content-card mb-4"><div class="card-heading"><div><span class="eyebrow">ROLE CATALOGUE</span><h2>Career paths to explore</h2></div><a class="text-link" href="{{ url_for('jobs') }}">Browse catalogue →</a></div>
+      <div class="recommendation-list">{% for job in report.recommendations %}<article class="recommendation-item"><div class="recommendation-top"><h3>{{ job.title }}</h3><strong>{{ job.match }}% <small>skill coverage</small></strong></div><div class="progress slim-progress" role="progressbar" aria-label="{{ job.title }} skill coverage" aria-valuenow="{{ job.match }}" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar" style="width: {{ job.match }}%"></div></div><p>{{ job.reason }} This is a catalogue comparison, not a hiring probability.</p>{% if job.demonstrated_skills %}<div class="small"><strong>Detected:</strong> {{ job.demonstrated_skills|join(', ') }}</div>{% endif %}<div class="small text-secondary mt-1">{{ job.next_step }}</div></article>{% endfor %}</div>
+    </section>
+    <section class="content-card mb-4"><div class="card-heading"><div><span class="eyebrow">YOUR NEXT STEPS</span><h2>Missing or unmentioned skills</h2></div></div>
+      {% if report.missing_skills %}<div class="table-responsive"><table class="table align-middle gap-table"><thead><tr><th>Skill</th><th>Priority</th><th>Why it matters</th></tr></thead><tbody>{% for gap in report.missing_skills %}<tr><td><strong>{{ gap.skill }}</strong></td><td><span class="priority-badge {{ 'high' if gap.priority == 'High priority' else 'medium' if gap.priority == 'Medium priority' else 'optional' }}">{{ gap.priority }}</span></td><td>{{ gap.why }}<small>{{ gap.note }}</small></td></tr>{% endfor %}</tbody></table></div><p class="small text-secondary mb-0">Learn and practice a skill before adding it to your resume. These are unmentioned skills, not proof you lack them.</p>
+      {% else %}<p class="text-secondary mb-0">Choose a target role or add a job description to compare relevant skills.</p>{% endif %}
+    </section>
+    <section class="content-card mb-4"><div class="card-heading"><div><span class="eyebrow">MAKE IT STRONGER</span><h2>Resume improvement ideas</h2></div></div>
+      {% if report.improvements %}<div class="improvement-list">{% for item in report.improvements %}<article class="improvement-item"><span class="improvement-mark">!</span><div><h3>{{ item.issue }}</h3><p><strong>Why it matters:</strong> {{ item.why }}</p><p><strong>Try:</strong> {{ item.recommendation }}</p>{% if item.example %}<div class="example-box"><strong>Example:</strong> {{ item.example }}</div>{% endif %}</div></article>{% endfor %}</div>{% else %}<p class="text-secondary mb-0">No specific section issues were detected by the basic checklist.</p>{% endif %}
+    </section>
+    <section class="content-card"><div class="card-heading"><div><span class="eyebrow">READY FOR A HUMAN REVIEW?</span><h2>ATS-readability checklist</h2></div></div><div class="checklist">{% for item in report.ats_checklist %}<div class="checklist-item"><span class="{{ 'check-pass' if item.passed else 'check-pending' }}">{{ '✓' if item.passed else '○' }}</span>{{ item.label }}</div>{% endfor %}</div><p class="small text-secondary mt-3 mb-0">This is a basic readability checklist, not a simulation of any employer’s applicant tracking system.</p></section>
+  </div>
+  <div class="col-lg-4">
+    <section class="content-card quality-card mb-4"><span class="eyebrow">SCORE BREAKDOWN</span><h2>What went into it?</h2>{% for item in report.quality.criteria %}<div class="quality-row"><div class="d-flex justify-content-between"><strong>{{ item.name }}</strong><span>{{ item.score }}/{{ item.weight }}</span></div><div class="progress slim-progress"><div class="progress-bar" style="width: {{ (item.score / item.weight * 100)|round }}%"></div></div><small>{{ item.feedback }}</small></div>{% endfor %}<div class="weight-note">Weights: skills 30% · projects and experience 25% · education and certifications 15% · achievements 15% · structure 15%.</div></section>
+    <section class="content-card learning-callout mb-4"><span class="eyebrow">PERSONALIZED ROADMAP</span><h2>Keep moving forward.</h2><p>Turn relevant skill gaps into small weekly learning goals.</p><a class="btn btn-primary w-100" href="{{ url_for('learning', analysis_id=analysis.id) }}">Open learning plan →</a>
+      {% for phase in report.learning_plan %}<div class="roadmap-mini"><strong>{{ phase.week }}</strong><span>{{ phase.tasks[0].skill }}</span></div>{% endfor %}
+    </section>
+    <section class="content-card"><span class="eyebrow">TRANSPARENCY</span><h2>What this report can’t tell you</h2><ul class="small text-secondary ps-3 mb-0">{% for note in report.limitations %}<li class="mb-2">{{ note }}</li>{% endfor %}</ul></section>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}<script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script><script src="{{ url_for('static', filename='js/charts.js') }}" defer></script>{% endblock %}

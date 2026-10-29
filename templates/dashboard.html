@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Overview · ResumeAI{% endblock %}
+{% block content %}
+<div class="page-heading d-flex flex-wrap justify-content-between align-items-end gap-3">
+  <div><span class="eyebrow">STUDENT WORKSPACE</span><h1>Welcome back, {{ current_user.name.split(' ')[0] }}</h1><p>Make your next career step a little clearer.</p></div>
+  <a class="btn btn-primary" href="{{ url_for('analyze') }}">＋ Analyze a resume</a>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-sm-6 col-xl-4"><div class="metric-card"><div class="metric-icon purple">◷</div><div><span>Reports saved</span><strong>{{ analysis_count }}</strong><small>Your private analysis history</small></div></div></div>
+  <div class="col-sm-6 col-xl-4"><div class="metric-card"><div class="metric-icon blue">⌕</div><div><span>Career catalogue</span><strong>10</strong><small>Entry-level paths to explore</small></div></div></div>
+  <div class="col-sm-12 col-xl-4"><div class="metric-card"><div class="metric-icon green">✦</div><div><span>Analysis mode</span><strong class="metric-word">{{ 'AI optional' if config.get('OPENAI_API_KEY') else 'Rule-based' }}</strong><small>Transparent fallback is always available</small></div></div></div>
+</div>
+<div class="row g-4">
+  <div class="col-lg-8">
+    <section class="content-card h-100">
+      <div class="card-heading"><div><span class="eyebrow">RECENT ACTIVITY</span><h2>Your latest reports</h2></div><a class="text-link" href="{{ url_for('history') }}">View history →</a></div>
+      {% if analyses %}
+      <div class="table-responsive"><table class="table align-middle report-table"><thead><tr><th>Report</th><th>Mode</th><th>Quality</th><th></th></tr></thead><tbody>
+      {% for analysis in analyses %}
+        <tr><td><strong>{{ analysis.target_role or 'Resume analysis' }}</strong><small>{{ analysis.created_at.strftime('%b %d, %Y') }}</small></td><td><span class="mode-badge">{{ analysis.analyzer_mode }}</span></td><td><strong>{{ analysis.report_json.quality.score }}/100</strong></td><td><a class="btn btn-sm btn-light" href="{{ url_for('report', analysis_id=analysis.id) }}">Open</a></td></tr>
+      {% endfor %}
+      </tbody></table></div>
+      {% else %}
+      <div class="empty-state"><div class="empty-icon">✦</div><h3>Your first report starts here</h3><p>Upload a PDF or DOCX resume, or paste your text to get your private analysis.</p><a class="btn btn-primary" href="{{ url_for('analyze') }}">Start an analysis</a></div>
+      {% endif %}
+    </section>
+  </div>
+  <div class="col-lg-4">
+    <section class="content-card quick-start"><span class="eyebrow">QUICK START</span><h2>Small steps, real progress.</h2><p>Explore the paths and resources that help you turn experience into evidence.</p>
+      <a href="{{ url_for('jobs') }}" class="quick-link"><span class="quick-link-icon">⌕</span><span><strong>Explore career paths</strong><small>Review local role requirements</small></span><b>→</b></a>
+      <a href="{{ url_for('learning') }}" class="quick-link"><span class="quick-link-icon">↗</span><span><strong>Open learning plan</strong><small>Follow your latest roadmap</small></span><b>→</b></a>
+      <div class="privacy-callout"><strong>Privacy note</strong><p>Resume text is stored only as part of your report history. Uploaded files are processed in memory, never saved.</p></div>
+    </section>
+  </div>
+</div>
+{% endblock %}

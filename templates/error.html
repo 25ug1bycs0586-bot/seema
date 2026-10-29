@@ -1,0 +1,3 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} · ResumeAI{% endblock %}
+{% block content %}<section class="content-card error-card"><div class="empty-icon">!</div><span class="eyebrow">RESUMEAI</span><h1>{{ title }}</h1><p>{{ message }}</p><a class="btn btn-primary" href="{{ url_for('dashboard') }}">Return to ResumeAI</a></section>{% endblock %}

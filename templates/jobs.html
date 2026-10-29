@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block title %}Career paths · ResumeAI{% endblock %}
+{% block content %}
+<div class="page-heading d-flex flex-wrap justify-content-between align-items-end gap-3"><div><span class="eyebrow">LOCAL ROLE CATALOGUE</span><h1>Career paths to explore</h1><p>Entry-level role examples with transparent skill requirements — not live job openings.</p></div><a class="btn btn-primary" href="{{ url_for('analyze') }}">Compare my resume</a></div>
+<div class="alert alert-info report-disclaimer">Match scores appear only in your personal reports and reflect detected role-skill coverage, not your chance of being hired.</div>
+<div class="row g-3">{% for job in jobs %}<div class="col-md-6 col-xl-4"><article class="content-card role-card"><div class="role-card-top"><span class="role-icon">⌕</span><span class="role-field">{{ job.field|replace('_', ' ')|title }}</span></div><h2>{{ job.title }}</h2><p>Entry-level career direction. Compare your current resume with the skills commonly associated with this role.</p><div class="role-skills"><strong>Catalogue skills</strong><div class="d-flex flex-wrap gap-2 mt-2">{% for skill in job.skills %}<span class="skill-chip">{{ skill }}</span>{% endfor %}</div></div><a class="text-link mt-3 d-inline-block" href="{{ url_for('analyze') }}?role={{ job.title|urlencode }}">Analyze for this role →</a></article></div>{% endfor %}</div>
+{% endblock %}

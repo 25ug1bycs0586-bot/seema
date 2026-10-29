@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}ResumeAI · Turn your experience into your next step{% endblock %}
+{% block content %}
+<section class="hero-section">
+  <div class="hero-copy">
+    <span class="eyebrow"><span class="status-dot"></span> A clearer path from campus to career</span>
+    <h1>Your next opportunity<br><span>starts with your story.</span></h1>
+    <p>Get thoughtful resume feedback, see how your skills align with entry-level roles, and build a practical learning plan — all in one place.</p>
+    <div class="d-flex flex-wrap gap-3 mt-4">
+      <a class="btn btn-primary btn-lg" href="{{ url_for('register') }}">Get started <span aria-hidden="true">→</span></a>
+      <a class="btn btn-light btn-lg border" href="{{ url_for('about') }}">Explore the project</a>
+    </div>
+    <div class="hero-trust"><span>✓</span> Private by design <span>✓</span> No hiring predictions <span>✓</span> Works without AI</div>
+  </div>
+  <div class="hero-preview" aria-label="Illustration of a ResumeAI report">
+    <div class="preview-window">
+      <div class="preview-top"><span></span><span></span><span></span><small>Resume analysis</small></div>
+      <div class="preview-body">
+        <div class="preview-heading"><div><small>RESUME QUALITY</small><h3>Good foundation</h3></div><div class="score-ring">78<span>/100</span></div></div>
+        <div class="preview-label">Skills detected</div>
+        <div class="d-flex flex-wrap gap-2"><span class="skill-chip">Python</span><span class="skill-chip">SQL</span><span class="skill-chip">Git</span><span class="skill-chip muted">+ evidence tips</span></div>
+        <div class="preview-label mt-4">Suggested next step</div>
+        <div class="preview-task"><span class="task-check">✓</span><div><strong>Build your data portfolio</strong><small>Turn a skill into a project you can explain.</small></div></div>
+        <div class="preview-bars"><i></i><i></i><i></i></div>
+      </div>
+    </div>
+    <div class="floating-note"><span class="note-icon">✦</span><div><strong>Evidence over guesswork</strong><small>Recommendations cite what was found</small></div></div>
+  </div>
+</section>
+<section class="landing-features">
+  <div class="section-heading"><span class="eyebrow">YOUR CAREER TOOLKIT</span><h2>Make every next step more intentional.</h2><p>Useful guidance for students, built around your experience — not a made-up score.</p></div>
+  <div class="row g-3">
+    <div class="col-md-4"><article class="feature-card"><span class="feature-icon purple">◉</span><h3>Know your strengths</h3><p>See detected skills, the context around them, and where you could add clearer evidence.</p></article></div>
+    <div class="col-md-4"><article class="feature-card"><span class="feature-icon blue">⌕</span><h3>Explore career paths</h3><p>Compare your resume with an editable catalogue of entry-level role requirements.</p></article></div>
+    <div class="col-md-4"><article class="feature-card"><span class="feature-icon green">↗</span><h3>Build a learning plan</h3><p>Turn unmentioned skills into a practical four-week plan with exercises and resources.</p></article></div>
+  </div>
+</section>
+{% endblock %}
